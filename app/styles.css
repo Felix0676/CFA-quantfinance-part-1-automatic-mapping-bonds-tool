@@ -189,6 +189,36 @@ tr:last-child td {
   cursor: pointer;
 }
 
+.pin-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 64px;
+  min-height: 28px;
+  border: 1px solid #c8dfef;
+  border-radius: 8px;
+  color: #126497;
+  background: #ffffff;
+  font-size: 12px;
+  font-weight: 760;
+  cursor: pointer;
+}
+
+.pin-toggle.is-pinned {
+  color: #ffffff;
+  border-color: #1677b8;
+  background: #1677b8;
+}
+
+.group-row td {
+  padding: 10px 14px;
+  color: #42526b;
+  background: #f1f8fd;
+  font-size: 13px;
+  font-weight: 760;
+  text-transform: uppercase;
+}
+
 .detail-row td {
   padding: 0;
   white-space: normal;

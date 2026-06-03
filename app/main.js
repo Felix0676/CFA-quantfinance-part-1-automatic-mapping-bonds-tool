@@ -3,6 +3,7 @@ import { sampleRecords } from "./sample-data.js";
 
 let scoredRows = scoreRecords(sampleRecords);
 let expandedCountry = null;
+const pinnedCountries = new Set();
 
 const tableBody = document.querySelector("#bondRows");
 const searchInput = document.querySelector("#searchInput");
@@ -48,34 +49,64 @@ function getVisibleRows() {
   const region = regionFilter.value;
   const sort = sortMode.value;
 
-  return scoredRows
+  const filteredRows = scoredRows
     .filter((row) => {
       const matchesRegion = region === "all" || row.region === region;
       const searchText = `${row.country} ${row.region} ${row.currency} ${row.creditRating}`.toLowerCase();
       return matchesRegion && searchText.includes(query);
-    })
-    .sort((a, b) => {
-      if (sort === "score-asc") return a.totalScore - b.totalScore;
-      if (sort === "az") return a.country.localeCompare(b.country);
-      return b.totalScore - a.totalScore;
     });
+
+  return sortRows(filteredRows, sort);
+}
+
+function sortRows(rows, sort) {
+  return [...rows].sort((a, b) => {
+    const pinnedDelta = Number(pinnedCountries.has(b.country)) - Number(pinnedCountries.has(a.country));
+    if (pinnedDelta !== 0) return pinnedDelta;
+
+    if (sort === "score-asc") return a.totalScore - b.totalScore;
+    if (sort === "az") return a.country.localeCompare(b.country);
+    return b.totalScore - a.totalScore;
+  });
 }
 
 function renderTable() {
   const rows = getVisibleRows();
   visibleCount.textContent = String(rows.length);
-  tableBody.innerHTML = rows
-    .map((row, index) => {
+  tableBody.innerHTML = renderRows(rows);
+}
+
+function renderRows(rows) {
+  let lastGroup = null;
+  let rank = 0;
+
+  return rows
+    .map((row) => {
       const isExpanded = expandedCountry === row.country;
+      const isPinned = pinnedCountries.has(row.country);
+      const groupLabel = getGroupLabel(row);
+      const shouldShowGroup = sortMode.value === "az" && groupLabel !== lastGroup;
+
+      if (shouldShowGroup) {
+        lastGroup = groupLabel;
+      }
+
+      rank += 1;
 
       return `
+        ${shouldShowGroup ? renderGroupRow(groupLabel) : ""}
         <tr class="data-row ${isExpanded ? "is-expanded" : ""}" data-country="${row.country}">
-          <td>${index + 1}</td>
+          <td>${rank}</td>
           <td>
             <button class="row-toggle" type="button" aria-expanded="${isExpanded}" data-country="${row.country}">
               <span>${isExpanded ? "Hide" : "View"}</span>
             </button>
             ${row.country}
+          </td>
+          <td>
+            <button class="pin-toggle ${isPinned ? "is-pinned" : ""}" type="button" aria-pressed="${isPinned}" data-country="${row.country}">
+              ${isPinned ? "Pinned" : "Pin"}
+            </button>
           </td>
           <td>${row.region}</td>
           <td>${row.currency}</td>
@@ -90,6 +121,18 @@ function renderTable() {
     .join("");
 }
 
+function renderGroupRow(groupLabel) {
+  return `
+    <tr class="group-row">
+      <td colspan="9">${groupLabel}</td>
+    </tr>
+  `;
+}
+
+function getGroupLabel(row) {
+  return row.country.trim().charAt(0).toUpperCase();
+}
+
 function renderDetailRow(row) {
   const bondScore = row.scoreBreakdown.bondReturnLiquidity.score;
   const riskScore = row.scoreBreakdown.sovereignRisk.score;
@@ -99,7 +142,7 @@ function renderDetailRow(row) {
 
   return `
     <tr class="detail-row">
-      <td colspan="8">
+      <td colspan="9">
         <section class="detail-panel" aria-label="${row.country} score details">
           <div class="detail-summary">
             <article>
@@ -193,6 +236,18 @@ searchInput.addEventListener("input", renderTable);
 regionFilter.addEventListener("change", renderTable);
 sortMode.addEventListener("change", renderTable);
 tableBody.addEventListener("click", (event) => {
+  const pinToggle = event.target.closest(".pin-toggle");
+  if (pinToggle) {
+    const country = pinToggle.dataset.country;
+    if (pinnedCountries.has(country)) {
+      pinnedCountries.delete(country);
+    } else {
+      pinnedCountries.add(country);
+    }
+    renderTable();
+    return;
+  }
+
   const toggle = event.target.closest(".row-toggle");
   if (!toggle) return;
 

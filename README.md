@@ -49,6 +49,8 @@ The preview includes:
 - Expandable score details showing rating score, category scores, and component scores
 - Raw component values next to normalized model scores
 - Winsorized P95/P5 benchmarks showing which raw value maps to 100 and which maps to 0
+- Pin buttons that keep selected countries above unpinned countries
+- A-Z grouping when sorting by country
 
 ## Next Development Step
 

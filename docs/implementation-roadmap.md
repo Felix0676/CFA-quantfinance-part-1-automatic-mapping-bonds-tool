@@ -78,6 +78,12 @@ Current Step 4A outcome:
 - Show Bond Return & Liquidity score, Sovereign Risk score, total score, and data confidence.
 - Show component-level normalized scores and within-category weights.
 
+Current Step 4B outcome:
+
+- Add pin/unpin behavior in the table.
+- Keep pinned countries above unpinned countries across sort modes.
+- Add A-Z grouping rows when sorting by country.
+
 ## Step 5: Editing And Persistence
 
 Implement:
