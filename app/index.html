@@ -19,6 +19,9 @@
             <strong id="onlineCount">1</strong>
             <small>Local preview session</small>
           </aside>
+          <input id="csvImportInput" type="file" accept=".csv,text/csv" hidden />
+          <button id="importCsv" type="button">Import CSV</button>
+          <button id="exportCsv" type="button">Export CSV</button>
           <button id="resetLocalData" type="button">Reset Local Data</button>
           <button id="updateRanking" type="button">Update Ranking</button>
         </section>
@@ -67,12 +70,24 @@
         </article>
       </section>
 
+      <section class="hidden-panel" aria-label="Hidden countries">
+        <header>
+          <section>
+            <span>Hidden Countries</span>
+            <strong id="hiddenCount">0</strong>
+          </section>
+          <small>Hidden records do not participate in the visible ranking.</small>
+        </header>
+        <div id="hiddenList" class="hidden-list"></div>
+      </section>
+
       <section class="table-panel" aria-label="Sovereign bond ranking table">
         <table>
           <thead>
             <tr>
               <th>Rank</th>
               <th>Country</th>
+              <th>Hide</th>
               <th>Pin</th>
               <th>Region</th>
               <th>Currency</th>

@@ -3,6 +3,29 @@ import { sampleRecords } from "./sample-data.js";
 
 const RECORDS_STORAGE_KEY = "sovereign-bond-records-v1";
 const PINNED_STORAGE_KEY = "sovereign-bond-pinned-v1";
+const HIDDEN_STORAGE_KEY = "sovereign-bond-hidden-v1";
+const csvColumns = [
+  "country",
+  "region",
+  "bondName",
+  "currency",
+  "maturity",
+  "couponRate",
+  "bondPrice",
+  "yieldToMaturity",
+  "creditRating",
+  "debtToGdp",
+  "fiscalDeficitToGdp",
+  "inflationRate",
+  "policyInterestRate",
+  "exchangeRateVolatility",
+  "foreignExchangeReserves",
+  "goldReserves",
+  "cdsSpread",
+  "liquidityBidAskSpread",
+  "sourceNote",
+  "lastUpdated"
+];
 const editableNumberFields = [
   "yieldToMaturity",
   "bondPrice",
@@ -22,8 +45,11 @@ let records = loadRecords();
 let scoredRows = scoreRecords(records);
 let expandedCountry = null;
 const pinnedCountries = new Set(loadPinnedCountries());
+const hiddenCountries = new Set(loadHiddenCountries());
 
 const tableBody = document.querySelector("#bondRows");
+const hiddenList = document.querySelector("#hiddenList");
+const hiddenCount = document.querySelector("#hiddenCount");
 const searchInput = document.querySelector("#searchInput");
 const regionFilter = document.querySelector("#regionFilter");
 const sortMode = document.querySelector("#sortMode");
@@ -31,6 +57,9 @@ const visibleCount = document.querySelector("#visibleCount");
 const onlineCount = document.querySelector("#onlineCount");
 const updateRanking = document.querySelector("#updateRanking");
 const resetLocalData = document.querySelector("#resetLocalData");
+const importCsv = document.querySelector("#importCsv");
+const exportCsv = document.querySelector("#exportCsv");
+const csvImportInput = document.querySelector("#csvImportInput");
 const saveState = document.querySelector("#saveState");
 const saveStatus = document.querySelector("#saveStatus");
 const editModal = document.querySelector("#editModal");
@@ -81,6 +110,7 @@ function getVisibleRows() {
 
   const filteredRows = scoredRows
     .filter((row) => {
+      if (hiddenCountries.has(row.country)) return false;
       const matchesRegion = region === "all" || row.region === region;
       const searchText = `${row.country} ${row.region} ${row.currency} ${row.creditRating}`.toLowerCase();
       return matchesRegion && searchText.includes(query);
@@ -104,6 +134,7 @@ function renderTable() {
   const rows = getVisibleRows();
   visibleCount.textContent = String(rows.length);
   tableBody.innerHTML = renderRows(rows);
+  renderHiddenCountries();
 }
 
 function renderRows(rows) {
@@ -125,6 +156,9 @@ function renderRows(rows) {
             </button>
             <button class="edit-toggle" type="button" data-country="${row.country}">Edit</button>
             ${row.country}
+          </td>
+          <td>
+            <button class="hide-toggle" type="button" data-country="${row.country}">Hide</button>
           </td>
           <td>
             <button class="pin-toggle ${isPinned ? "is-pinned" : ""}" type="button" aria-pressed="${isPinned}" data-country="${row.country}">
@@ -153,7 +187,7 @@ function renderDetailRow(row) {
 
   return `
     <tr class="detail-row">
-      <td colspan="9">
+      <td colspan="10">
         <section class="detail-panel" aria-label="${row.country} score details">
           <div class="detail-summary">
             <article>
@@ -247,6 +281,12 @@ searchInput.addEventListener("input", renderTable);
 regionFilter.addEventListener("change", renderTable);
 sortMode.addEventListener("change", renderTable);
 tableBody.addEventListener("click", (event) => {
+  const hideToggle = event.target.closest(".hide-toggle");
+  if (hideToggle) {
+    hideCountry(hideToggle.dataset.country);
+    return;
+  }
+
   const editToggle = event.target.closest(".edit-toggle");
   if (editToggle) {
     openEditForm(editToggle.dataset.country);
@@ -282,6 +322,14 @@ updateRanking.addEventListener("click", () => {
   }, 1200);
 });
 resetLocalData.addEventListener("click", resetLocalRecords);
+exportCsv.addEventListener("click", exportVisibleCsv);
+importCsv.addEventListener("click", () => csvImportInput.click());
+csvImportInput.addEventListener("change", importCsvFile);
+hiddenList.addEventListener("click", (event) => {
+  const restoreButton = event.target.closest(".restore-toggle");
+  if (!restoreButton) return;
+  restoreCountry(restoreButton.dataset.country);
+});
 closeEdit.addEventListener("click", closeEditForm);
 cancelEdit.addEventListener("click", closeEditForm);
 editModal.addEventListener("click", (event) => {
@@ -321,9 +369,11 @@ function resetLocalRecords() {
 
   window.localStorage.removeItem(RECORDS_STORAGE_KEY);
   window.localStorage.removeItem(PINNED_STORAGE_KEY);
+  window.localStorage.removeItem(HIDDEN_STORAGE_KEY);
   records = cloneRecords(sampleRecords);
   scoredRows = scoreRecords(records);
   pinnedCountries.clear();
+  hiddenCountries.clear();
   expandedCountry = null;
   closeEditForm();
   updateSaveStatus("Sample data restored locally");
@@ -339,9 +389,61 @@ function loadPinnedCountries() {
   }
 }
 
+function loadHiddenCountries() {
+  try {
+    const stored = window.localStorage.getItem(HIDDEN_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
 function savePinnedCountries() {
   window.localStorage.setItem(PINNED_STORAGE_KEY, JSON.stringify([...pinnedCountries]));
   updateSaveStatus("Pinned state saved locally");
+}
+
+function saveHiddenCountries() {
+  window.localStorage.setItem(HIDDEN_STORAGE_KEY, JSON.stringify([...hiddenCountries]));
+  updateSaveStatus("Hidden countries saved locally");
+}
+
+function hideCountry(country) {
+  hiddenCountries.add(country);
+  pinnedCountries.delete(country);
+  if (expandedCountry === country) {
+    expandedCountry = null;
+  }
+  saveHiddenCountries();
+  savePinnedCountries();
+  renderTable();
+}
+
+function restoreCountry(country) {
+  hiddenCountries.delete(country);
+  saveHiddenCountries();
+  renderTable();
+}
+
+function renderHiddenCountries() {
+  const hiddenRecords = records
+    .filter((record) => hiddenCountries.has(record.country))
+    .sort((a, b) => a.country.localeCompare(b.country));
+
+  hiddenCount.textContent = String(hiddenRecords.length);
+  hiddenList.innerHTML = hiddenRecords.length
+    ? hiddenRecords
+        .map(
+          (record) => `
+            <div class="hidden-item">
+              <span>${record.country}</span>
+              <small>${record.region} / ${record.currency}</small>
+              <button class="restore-toggle" type="button" data-country="${record.country}">Restore</button>
+            </div>
+          `
+        )
+        .join("")
+    : `<p>No hidden countries.</p>`;
 }
 
 function updateSaveStatus(message = "Manual edits save in this browser") {
@@ -399,4 +501,146 @@ function parseNullableNumber(value) {
   if (value === "") return null;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
+}
+
+function exportVisibleCsv() {
+  const rows = getVisibleRows();
+  const exportColumns = [
+    "rank",
+    ...csvColumns,
+    "totalScore",
+    "dataConfidence",
+    "realYield"
+  ];
+  const csvRows = [
+    exportColumns.join(","),
+    ...rows.map((row, index) =>
+      exportColumns
+        .map((column) => {
+          if (column === "rank") return index + 1;
+          return formatCsvValue(row[column]);
+        })
+        .join(",")
+    )
+  ];
+
+  const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "sovereign-bond-ranking.csv";
+  link.click();
+  URL.revokeObjectURL(url);
+  updateSaveStatus("Visible ranking exported as CSV");
+}
+
+function formatCsvValue(value) {
+  if (value === null || value === undefined) return "";
+  const text = String(value);
+  if (!/[",\n]/.test(text)) return text;
+  return `"${text.replaceAll('"', '""')}"`;
+}
+
+async function importCsvFile(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  try {
+    const text = await file.text();
+    const importedRecords = parseCsvRecords(text);
+    if (importedRecords.length === 0) {
+      updateSaveStatus("CSV import failed: no records found");
+      return;
+    }
+
+    records = importedRecords;
+    scoredRows = scoreRecords(records);
+    pinnedCountries.clear();
+    hiddenCountries.clear();
+    expandedCountry = null;
+    saveRecords();
+    savePinnedCountries();
+    saveHiddenCountries();
+    updateSaveStatus(`${records.length} records imported locally`);
+    renderTable();
+  } catch {
+    updateSaveStatus("CSV import failed");
+  } finally {
+    csvImportInput.value = "";
+  }
+}
+
+function parseCsvRecords(text) {
+  const rows = parseCsvRows(text).filter((row) => row.some((cell) => cell.trim() !== ""));
+  if (rows.length < 2) return [];
+
+  const headers = rows[0].map((header) => header.trim());
+  return rows.slice(1).map((row) => {
+    const record = {};
+    headers.forEach((header, index) => {
+      record[header] = row[index] ?? "";
+    });
+
+    for (const field of editableNumberFields) {
+      record[field] = parseNullableNumber(record[field] ?? "");
+    }
+
+    return {
+      country: record.country || "Unknown",
+      region: record.region || "Unassigned",
+      bondName: record.bondName || "",
+      currency: record.currency || "",
+      maturity: record.maturity || "10Y",
+      creditRating: record.creditRating || "BBB",
+      sourceNote: record.sourceNote || "",
+      lastUpdated: record.lastUpdated || new Date().toISOString(),
+      ...record
+    };
+  });
+}
+
+function parseCsvRows(text) {
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let inQuotes = false;
+
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index];
+    const nextChar = text[index + 1];
+
+    if (char === '"' && inQuotes && nextChar === '"') {
+      cell += '"';
+      index += 1;
+      continue;
+    }
+
+    if (char === '"') {
+      inQuotes = !inQuotes;
+      continue;
+    }
+
+    if (char === "," && !inQuotes) {
+      row.push(cell);
+      cell = "";
+      continue;
+    }
+
+    if ((char === "\n" || char === "\r") && !inQuotes) {
+      if (char === "\r" && nextChar === "\n") {
+        index += 1;
+      }
+      row.push(cell);
+      rows.push(row);
+      row = [];
+      cell = "";
+      continue;
+    }
+
+    cell += char;
+  }
+
+  row.push(cell);
+  rows.push(row);
+  return rows;
 }

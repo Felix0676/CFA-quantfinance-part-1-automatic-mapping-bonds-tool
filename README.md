@@ -55,10 +55,13 @@ The preview includes:
 - Manual edit form for key bond and country metrics
 - Browser-local persistence for manual edits and pin state
 - Reset Local Data control for restoring sample records in the current browser
+- Hide and restore workflow for countries removed from the visible ranking
+- CSV export for the current visible ranking
+- CSV import for replacing the local dataset
 
 ## Next Development Step
 
-The current preview includes the first scoring engine and browser-local manual editing. The next step is to expand production-grade persistence:
+The current preview includes the first scoring engine, browser-local manual editing, hide/restore, and CSV import/export. The next step is to expand production-grade persistence:
 
 - More complete country fields
 - Database-backed persistence in the desktop shell

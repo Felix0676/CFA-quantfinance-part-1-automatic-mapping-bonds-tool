@@ -124,6 +124,14 @@ Minimum outcome:
 - Hidden records do not affect main ranking.
 - Exported CSV matches the visible ranking and score data.
 
+Current Step 6A outcome:
+
+- Add hide buttons on visible rows.
+- Add hidden countries management and restore buttons.
+- Persist hidden countries in browser `localStorage`.
+- Add CSV export for the current visible ranking.
+- Add CSV import to replace the local dataset.
+
 ## Step 7: Packaging Preparation
 
 Implement:
