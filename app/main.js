@@ -30,6 +30,7 @@ const sortMode = document.querySelector("#sortMode");
 const visibleCount = document.querySelector("#visibleCount");
 const onlineCount = document.querySelector("#onlineCount");
 const updateRanking = document.querySelector("#updateRanking");
+const resetLocalData = document.querySelector("#resetLocalData");
 const saveState = document.querySelector("#saveState");
 const saveStatus = document.querySelector("#saveStatus");
 const editModal = document.querySelector("#editModal");
@@ -280,6 +281,7 @@ updateRanking.addEventListener("click", () => {
     updateRanking.textContent = "Update Ranking";
   }, 1200);
 });
+resetLocalData.addEventListener("click", resetLocalRecords);
 closeEdit.addEventListener("click", closeEditForm);
 cancelEdit.addEventListener("click", closeEditForm);
 editModal.addEventListener("click", (event) => {
@@ -308,6 +310,24 @@ function cloneRecords(sourceRecords) {
 function saveRecords() {
   window.localStorage.setItem(RECORDS_STORAGE_KEY, JSON.stringify(records));
   updateSaveStatus();
+}
+
+function resetLocalRecords() {
+  const shouldReset = window.confirm(
+    "Reset local edits and pinned countries? This restores the sample data in this browser."
+  );
+
+  if (!shouldReset) return;
+
+  window.localStorage.removeItem(RECORDS_STORAGE_KEY);
+  window.localStorage.removeItem(PINNED_STORAGE_KEY);
+  records = cloneRecords(sampleRecords);
+  scoredRows = scoreRecords(records);
+  pinnedCountries.clear();
+  expandedCountry = null;
+  closeEditForm();
+  updateSaveStatus("Sample data restored locally");
+  renderTable();
 }
 
 function loadPinnedCountries() {

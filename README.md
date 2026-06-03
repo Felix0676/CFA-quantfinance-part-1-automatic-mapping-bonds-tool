@@ -54,13 +54,13 @@ The preview includes:
 - Country A-Z sort without separate letter divider rows
 - Manual edit form for key bond and country metrics
 - Browser-local persistence for manual edits and pin state
+- Reset Local Data control for restoring sample records in the current browser
 
 ## Next Development Step
 
 The current preview includes the first scoring engine and browser-local manual editing. The next step is to expand production-grade persistence:
 
 - More complete country fields
-- Restore/reset controls
 - Database-backed persistence in the desktop shell
 
 ## Checks

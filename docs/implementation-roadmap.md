@@ -105,6 +105,12 @@ Current Step 5A outcome:
 - Recalculate scores and rankings after edits.
 - Defer database-backed desktop persistence until the Electron shell exists.
 
+Current Step 5B outcome:
+
+- Add `Reset Local Data` control.
+- Confirm before clearing local edits.
+- Restore sample records and clear pinned countries in the current browser.
+
 ## Step 6: Hide / Restore And CSV Export
 
 Implement:
