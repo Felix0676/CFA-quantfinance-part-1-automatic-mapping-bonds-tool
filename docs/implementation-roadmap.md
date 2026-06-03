@@ -97,6 +97,14 @@ Minimum outcome:
 - User can update data manually.
 - Closing and reopening the app preserves records and settings.
 
+Current Step 5A outcome:
+
+- Add a manual edit form for core bond and country metrics.
+- Save edited records to browser `localStorage`.
+- Save pinned countries to browser `localStorage`.
+- Recalculate scores and rankings after edits.
+- Defer database-backed desktop persistence until the Electron shell exists.
+
 ## Step 6: Hide / Restore And CSV Export
 
 Implement:

@@ -1,9 +1,27 @@
 import { scoreRecords } from "./scoring.js";
 import { sampleRecords } from "./sample-data.js";
 
-let scoredRows = scoreRecords(sampleRecords);
+const RECORDS_STORAGE_KEY = "sovereign-bond-records-v1";
+const PINNED_STORAGE_KEY = "sovereign-bond-pinned-v1";
+const editableNumberFields = [
+  "yieldToMaturity",
+  "bondPrice",
+  "couponRate",
+  "debtToGdp",
+  "fiscalDeficitToGdp",
+  "inflationRate",
+  "policyInterestRate",
+  "exchangeRateVolatility",
+  "foreignExchangeReserves",
+  "goldReserves",
+  "cdsSpread",
+  "liquidityBidAskSpread"
+];
+
+let records = loadRecords();
+let scoredRows = scoreRecords(records);
 let expandedCountry = null;
-const pinnedCountries = new Set();
+const pinnedCountries = new Set(loadPinnedCountries());
 
 const tableBody = document.querySelector("#bondRows");
 const searchInput = document.querySelector("#searchInput");
@@ -12,8 +30,16 @@ const sortMode = document.querySelector("#sortMode");
 const visibleCount = document.querySelector("#visibleCount");
 const onlineCount = document.querySelector("#onlineCount");
 const updateRanking = document.querySelector("#updateRanking");
+const saveState = document.querySelector("#saveState");
+const saveStatus = document.querySelector("#saveStatus");
+const editModal = document.querySelector("#editModal");
+const editForm = document.querySelector("#editForm");
+const editTitle = document.querySelector("#editTitle");
+const closeEdit = document.querySelector("#closeEdit");
+const cancelEdit = document.querySelector("#cancelEdit");
 
 onlineCount.textContent = "1";
+updateSaveStatus();
 
 const indicatorLabels = {
   yieldToMaturity: "Yield to Maturity",
@@ -96,6 +122,7 @@ function renderRows(rows) {
             <button class="row-toggle" type="button" aria-expanded="${isExpanded}" data-country="${row.country}">
               <span>${isExpanded ? "Hide" : "View"}</span>
             </button>
+            <button class="edit-toggle" type="button" data-country="${row.country}">Edit</button>
             ${row.country}
           </td>
           <td>
@@ -219,6 +246,12 @@ searchInput.addEventListener("input", renderTable);
 regionFilter.addEventListener("change", renderTable);
 sortMode.addEventListener("change", renderTable);
 tableBody.addEventListener("click", (event) => {
+  const editToggle = event.target.closest(".edit-toggle");
+  if (editToggle) {
+    openEditForm(editToggle.dataset.country);
+    return;
+  }
+
   const pinToggle = event.target.closest(".pin-toggle");
   if (pinToggle) {
     const country = pinToggle.dataset.country;
@@ -227,6 +260,7 @@ tableBody.addEventListener("click", (event) => {
     } else {
       pinnedCountries.add(country);
     }
+    savePinnedCountries();
     renderTable();
     return;
   }
@@ -239,12 +273,110 @@ tableBody.addEventListener("click", (event) => {
   renderTable();
 });
 updateRanking.addEventListener("click", () => {
-  scoredRows = scoreRecords(sampleRecords);
+  scoredRows = scoreRecords(records);
   updateRanking.textContent = "Ranking Updated";
   renderTable();
   window.setTimeout(() => {
     updateRanking.textContent = "Update Ranking";
   }, 1200);
 });
+closeEdit.addEventListener("click", closeEditForm);
+cancelEdit.addEventListener("click", closeEditForm);
+editModal.addEventListener("click", (event) => {
+  if (event.target === editModal) closeEditForm();
+});
+editForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  saveEditForm();
+});
 
 renderTable();
+
+function loadRecords() {
+  try {
+    const stored = window.localStorage.getItem(RECORDS_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : cloneRecords(sampleRecords);
+  } catch {
+    return cloneRecords(sampleRecords);
+  }
+}
+
+function cloneRecords(sourceRecords) {
+  return sourceRecords.map((record) => ({ ...record }));
+}
+
+function saveRecords() {
+  window.localStorage.setItem(RECORDS_STORAGE_KEY, JSON.stringify(records));
+  updateSaveStatus();
+}
+
+function loadPinnedCountries() {
+  try {
+    const stored = window.localStorage.getItem(PINNED_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
+function savePinnedCountries() {
+  window.localStorage.setItem(PINNED_STORAGE_KEY, JSON.stringify([...pinnedCountries]));
+  updateSaveStatus("Pinned state saved locally");
+}
+
+function updateSaveStatus(message = "Manual edits save in this browser") {
+  saveState.textContent = "Local";
+  saveStatus.textContent = message;
+}
+
+function openEditForm(country) {
+  const record = records.find((item) => item.country === country);
+  if (!record) return;
+
+  editTitle.textContent = `Edit ${record.country}`;
+  editForm.elements.country.value = record.country;
+  editForm.elements.creditRating.value = record.creditRating;
+  editForm.elements.sourceNote.value = record.sourceNote || "";
+
+  for (const field of editableNumberFields) {
+    editForm.elements[field].value = record[field] ?? "";
+  }
+
+  editModal.hidden = false;
+}
+
+function closeEditForm() {
+  editModal.hidden = true;
+  editForm.reset();
+}
+
+function saveEditForm() {
+  const country = editForm.elements.country.value;
+  const recordIndex = records.findIndex((item) => item.country === country);
+  if (recordIndex === -1) return;
+
+  const updatedRecord = {
+    ...records[recordIndex],
+    creditRating: editForm.elements.creditRating.value,
+    sourceNote: editForm.elements.sourceNote.value.trim(),
+    lastUpdated: new Date().toISOString()
+  };
+
+  for (const field of editableNumberFields) {
+    updatedRecord[field] = parseNullableNumber(editForm.elements[field].value);
+  }
+
+  records = records.map((record, index) => (index === recordIndex ? updatedRecord : record));
+  scoredRows = scoreRecords(records);
+  expandedCountry = country;
+  saveRecords();
+  updateSaveStatus(`${country} saved locally`);
+  closeEditForm();
+  renderTable();
+}
+
+function parseNullableNumber(value) {
+  if (value === "") return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}

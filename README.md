@@ -52,15 +52,16 @@ The preview includes:
 - Winsorized P95/P5 benchmarks showing which raw value maps to 100 and which maps to 0
 - Pin buttons that keep selected countries above unpinned countries
 - Country A-Z sort without separate letter divider rows
+- Manual edit form for key bond and country metrics
+- Browser-local persistence for manual edits and pin state
 
 ## Next Development Step
 
-The current preview includes the first scoring engine. The next step is to expand the table UI:
+The current preview includes the first scoring engine and browser-local manual editing. The next step is to expand production-grade persistence:
 
-- More visible columns
-- Expandable country details
-- Pin behavior
-- Country A-Z sorting
+- More complete country fields
+- Restore/reset controls
+- Database-backed persistence in the desktop shell
 
 ## Checks
 
