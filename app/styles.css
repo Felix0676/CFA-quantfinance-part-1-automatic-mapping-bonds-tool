@@ -224,13 +224,23 @@ tr:last-child td {
   background: #f8fcff;
 }
 
+.actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.country-cell {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .row-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-width: 54px;
   min-height: 28px;
-  margin-right: 10px;
   border: 1px solid #c8dfef;
   border-radius: 8px;
   color: #126497;
@@ -246,7 +256,6 @@ tr:last-child td {
   justify-content: center;
   min-width: 48px;
   min-height: 28px;
-  margin-right: 10px;
   border: 1px solid #c8dfef;
   border-radius: 8px;
   color: #42526b;

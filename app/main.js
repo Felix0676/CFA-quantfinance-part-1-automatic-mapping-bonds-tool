@@ -156,16 +156,14 @@ function renderRows(rows) {
       return `
         <tr class="data-row ${isExpanded ? "is-expanded" : ""}" data-country="${row.country}">
           <td>${rank}</td>
-          <td>
+          <td class="actions-cell">
             <button class="row-toggle" type="button" aria-expanded="${isExpanded}" data-country="${row.country}">
               <span>${isExpanded ? "Hide" : "View"}</span>
             </button>
             <button class="edit-toggle" type="button" data-country="${row.country}">Edit</button>
-            ${row.country}
-          </td>
-          <td>
             <button class="hide-toggle" type="button" data-country="${row.country}">Hide</button>
           </td>
+          <td class="country-cell">${row.country}</td>
           <td>
             <button class="pin-toggle ${isPinned ? "is-pinned" : ""}" type="button" aria-pressed="${isPinned}" data-country="${row.country}">
               ${isPinned ? "Pinned" : "Pin"}
