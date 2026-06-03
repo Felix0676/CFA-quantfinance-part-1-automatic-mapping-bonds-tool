@@ -44,7 +44,6 @@ The preview includes:
 - Search input
 - Region filter
 - Sort control
-- Update Ranking button
 - Sample sovereign bond ranking table
 - Scores and confidence calculated by the shared scoring engine
 - Expandable score details showing rating score, category scores, and component scores

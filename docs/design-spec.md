@@ -40,7 +40,7 @@ The table should support:
 
 ## Controls
 
-- Use buttons for clear commands such as `Update Ranking` and `Export CSV`.
+- Use buttons for clear commands such as `Export CSV`, `Import CSV`, and `Reset Local Data`.
 - Use search input for text search.
 - Use dropdown or segmented control for region and sort mode.
 - Use sliders or numeric inputs for weight settings.

@@ -21,7 +21,7 @@ The interface should be English-first, simple, and table-centered.
 5. Browse countries in A-Z groups.
 6. Expand a country row to inspect detailed indicators.
 7. Edit bond and country metrics manually.
-8. Click `Update Ranking` to recalculate scores.
+8. Save edits or import data to automatically recalculate scores.
 9. Pin important countries.
 10. Hide countries and restore them later.
 11. Export the current table view to CSV.

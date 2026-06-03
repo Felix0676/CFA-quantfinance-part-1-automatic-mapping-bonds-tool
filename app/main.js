@@ -55,7 +55,6 @@ const regionFilter = document.querySelector("#regionFilter");
 const sortMode = document.querySelector("#sortMode");
 const visibleCount = document.querySelector("#visibleCount");
 const onlineCount = document.querySelector("#onlineCount");
-const updateRanking = document.querySelector("#updateRanking");
 const resetLocalData = document.querySelector("#resetLocalData");
 const importCsv = document.querySelector("#importCsv");
 const exportCsv = document.querySelector("#exportCsv");
@@ -312,14 +311,6 @@ tableBody.addEventListener("click", (event) => {
   const country = toggle.dataset.country;
   expandedCountry = expandedCountry === country ? null : country;
   renderTable();
-});
-updateRanking.addEventListener("click", () => {
-  scoredRows = scoreRecords(records);
-  updateRanking.textContent = "Ranking Updated";
-  renderTable();
-  window.setTimeout(() => {
-    updateRanking.textContent = "Update Ranking";
-  }, 1200);
 });
 resetLocalData.addEventListener("click", resetLocalRecords);
 exportCsv.addEventListener("click", exportVisibleCsv);
