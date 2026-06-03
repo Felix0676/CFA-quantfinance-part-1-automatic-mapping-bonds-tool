@@ -32,7 +32,7 @@ The table should support:
 - Search by country, bond name, currency, or credit rating.
 - Region filtering.
 - Score sorting.
-- A-Z grouping.
+- Country A-Z sorting.
 - Expand/collapse country rows.
 - Pin country.
 - Hide country.
@@ -53,4 +53,3 @@ The table should support:
 - Do not rely on color alone to explain risk or ranking.
 - Use clear labels for financial indicators.
 - Keep UI text English-first.
-

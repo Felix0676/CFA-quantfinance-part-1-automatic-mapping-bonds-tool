@@ -254,15 +254,6 @@ tr:last-child td {
   background: #1677b8;
 }
 
-.group-row td {
-  padding: 10px 14px;
-  color: #42526b;
-  background: #f1f8fd;
-  font-size: 13px;
-  font-weight: 760;
-  text-transform: uppercase;
-}
-
 .detail-row td {
   padding: 0;
   white-space: normal;

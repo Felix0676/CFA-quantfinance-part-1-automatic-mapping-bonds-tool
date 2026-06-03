@@ -62,7 +62,7 @@ Implement:
 - Search.
 - Region filter.
 - Score sorting.
-- A-Z grouping.
+- Country A-Z sorting.
 - Expand/collapse detail rows.
 - Pin behavior.
 
@@ -82,7 +82,7 @@ Current Step 4B outcome:
 
 - Add pin/unpin behavior in the table.
 - Keep pinned countries above unpinned countries across sort modes.
-- Add A-Z grouping rows when sorting by country.
+- Add Country A-Z sorting without separate letter divider rows.
 
 ## Step 5: Editing And Persistence
 

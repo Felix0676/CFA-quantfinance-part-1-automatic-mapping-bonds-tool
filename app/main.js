@@ -80,24 +80,16 @@ function renderTable() {
 }
 
 function renderRows(rows) {
-  let lastGroup = null;
   let rank = 0;
 
   return rows
     .map((row) => {
       const isExpanded = expandedCountry === row.country;
       const isPinned = pinnedCountries.has(row.country);
-      const groupLabel = getGroupLabel(row);
-      const shouldShowGroup = sortMode.value === "az" && groupLabel !== lastGroup;
-
-      if (shouldShowGroup) {
-        lastGroup = groupLabel;
-      }
 
       rank += 1;
 
       return `
-        ${shouldShowGroup ? renderGroupRow(groupLabel) : ""}
         <tr class="data-row ${isExpanded ? "is-expanded" : ""}" data-country="${row.country}">
           <td>${rank}</td>
           <td>
@@ -122,18 +114,6 @@ function renderRows(rows) {
       `;
     })
     .join("");
-}
-
-function renderGroupRow(groupLabel) {
-  return `
-    <tr class="group-row">
-      <td colspan="9">${groupLabel}</td>
-    </tr>
-  `;
-}
-
-function getGroupLabel(row) {
-  return row.country.trim().charAt(0).toUpperCase();
 }
 
 function renderDetailRow(row) {

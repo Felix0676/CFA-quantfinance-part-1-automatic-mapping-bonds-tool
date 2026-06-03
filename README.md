@@ -51,7 +51,7 @@ The preview includes:
 - Raw component values next to normalized model scores
 - Winsorized P95/P5 benchmarks showing which raw value maps to 100 and which maps to 0
 - Pin buttons that keep selected countries above unpinned countries
-- A-Z grouping when sorting by country
+- Country A-Z sort without separate letter divider rows
 
 ## Next Development Step
 
@@ -60,7 +60,7 @@ The current preview includes the first scoring engine. The next step is to expan
 - More visible columns
 - Expandable country details
 - Pin behavior
-- A-Z grouping
+- Country A-Z sorting
 
 ## Checks
 
