@@ -19,6 +19,10 @@ assert.ok(singapore);
 assert.equal(singapore.realYield, 0.8999999999999999);
 assert.equal(singapore.dataConfidence, 98.7);
 assert.equal(singapore.scoreBreakdown.sovereignRisk.components.creditRating.normalized, 100);
+assert.equal(singapore.scoreBreakdown.bondReturnLiquidity.components.yieldToMaturity.benchmark.hundredScoreValue, 4.5);
+assert.equal(singapore.scoreBreakdown.bondReturnLiquidity.components.yieldToMaturity.benchmark.zeroScoreValue, 1.1);
+assert.equal(singapore.scoreBreakdown.sovereignRisk.components.cdsSpread.benchmark.hundredScoreValue, 11);
+assert.equal(singapore.scoreBreakdown.sovereignRisk.components.cdsSpread.benchmark.zeroScoreValue, 38);
 
 const missingHeavyRecord = {
   country: "Missing Data Test",

@@ -247,7 +247,7 @@ tr:last-child td {
 
 .component-list div {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-columns: minmax(0, 1fr) 560px;
   gap: 12px;
   align-items: center;
   min-height: 38px;
@@ -280,5 +280,11 @@ tr:last-child td {
 .component-list .raw-value {
   min-width: 132px;
   color: #42526b;
+  text-align: left;
+}
+
+.component-list .benchmark-value {
+  min-width: 220px;
+  color: #607188;
   text-align: left;
 }

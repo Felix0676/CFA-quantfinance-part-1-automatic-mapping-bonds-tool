@@ -149,6 +149,7 @@ function renderComponentList(components) {
               <dt>${indicatorLabels[indicator]}</dt>
               <dd>
                 <small class="raw-value">Raw: ${formatRawValue(indicator, component.rawValue)}</small>
+                <small class="benchmark-value">${formatBenchmark(indicator, component.benchmark)}</small>
                 <span>${formatScore(component.normalized)} / 100</span>
                 <small>Weight ${(component.weight * 100).toFixed(0)}%</small>
               </dd>
@@ -172,6 +173,18 @@ function formatRawValue(indicator, value) {
   if (unit === "USD bn") return `${value.toLocaleString()} ${unit}`;
   if (unit === "tonnes") return `${value.toLocaleString()} ${unit}`;
   return `${value.toFixed(2)}${unit}`;
+}
+
+function formatBenchmark(indicator, benchmark) {
+  if (!benchmark || benchmark.hundredScoreValue === null) return "Benchmark: Missing";
+
+  if (indicator === "creditRating") {
+    return "Benchmark: AAA = 100, D = 0";
+  }
+
+  const zeroValue = formatRawValue(indicator, benchmark.zeroScoreValue);
+  const hundredValue = formatRawValue(indicator, benchmark.hundredScoreValue);
+  return `Benchmark: ${hundredValue} = 100, ${zeroValue} = 0`;
 }
 
 searchInput.addEventListener("input", renderTable);

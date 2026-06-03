@@ -100,6 +100,14 @@ For lower-is-better indicators, lower raw values should increase score.
 
 The first implementation can use dataset min-max normalization, with the scoring logic kept isolated so future methods can be added.
 
+The UI must show the active benchmark for each normalized indicator:
+
+- For higher-is-better indicators: dataset max = 100, dataset min = 0.
+- For lower-is-better indicators: dataset min = 100, dataset max = 0.
+- For mapped indicators such as credit rating: show the rating scale benchmark, such as AAA = 100 and D = 0.
+
+This makes scores auditable. For example, if the current dataset has 10Y yield values from 1.10% to 4.50%, then 4.50% maps to 100, 1.10% maps to 0, and 3.00% maps to about 55.9.
+
 ## Missing Data
 
 Missing fields must not automatically score as zero.
@@ -116,4 +124,3 @@ The UI should show two weight levels:
 - Indicator Weight within Category
 
 When weights are editable, totals should remain valid and understandable.
-

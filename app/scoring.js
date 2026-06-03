@@ -106,6 +106,26 @@ function normalizeValue(value, min, max, direction) {
   return direction === "lower" ? 100 - normalized : normalized;
 }
 
+function getBenchmark(range) {
+  if (!range || range.min === null || range.max === null) {
+    return { zeroScoreValue: null, hundredScoreValue: null, direction: null };
+  }
+
+  if (range.direction === "lower") {
+    return {
+      zeroScoreValue: range.max,
+      hundredScoreValue: range.min,
+      direction: range.direction
+    };
+  }
+
+  return {
+    zeroScoreValue: range.min,
+    hundredScoreValue: range.max,
+    direction: range.direction
+  };
+}
+
 function buildRanges(records) {
   const ranges = {};
 
@@ -144,7 +164,8 @@ function scoreCategory(record, category, ranges, weights = DEFAULT_WEIGHTS) {
     components[indicator] = {
       rawValue,
       normalized: normalized === null ? null : round(normalized),
-      weight: indicatorWeight
+      weight: indicatorWeight,
+      benchmark: getBenchmark(range)
     };
 
     if (normalized === null) continue;
@@ -212,4 +233,3 @@ export function scoreRecords(records, weights = DEFAULT_WEIGHTS) {
     };
   });
 }
-
