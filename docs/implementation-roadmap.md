@@ -1,0 +1,101 @@
+# Implementation Roadmap
+
+## Step 1: Project Governance Setup
+
+Create:
+
+- `development-logs/`
+- `docs/`
+- `CODEX.md`
+
+Add standards for requirements, technical direction, design, scoring, development process, and phased implementation.
+
+No application code in this step.
+
+## Step 2: App Scaffold
+
+Create the Electron + React + TypeScript project skeleton.
+
+Minimum outcome:
+
+- App window launches locally.
+- Basic app shell appears.
+- Development command is documented.
+- No scoring or table complexity yet.
+
+## Step 3: Scoring Engine
+
+Implement:
+
+- Domain data types.
+- Credit rating mapping.
+- Real yield calculation.
+- Indicator normalization.
+- Two-level category and indicator weights.
+- Total score.
+- Data confidence.
+
+Minimum outcome:
+
+- Scoring works against sample records.
+- Focused tests verify expected behavior.
+
+## Step 4: Core Table UI
+
+Implement:
+
+- Main ranking table.
+- Search.
+- Region filter.
+- Score sorting.
+- A-Z grouping.
+- Expand/collapse detail rows.
+- Pin behavior.
+
+Minimum outcome:
+
+- User can inspect ranked sovereign bond records.
+- UI remains readable and stable.
+
+## Step 5: Editing And Persistence
+
+Implement:
+
+- Edit flow for country/bond metrics.
+- Local storage for records and settings.
+- Last updated and source note fields.
+
+Minimum outcome:
+
+- User can update data manually.
+- Closing and reopening the app preserves records and settings.
+
+## Step 6: Hide / Restore And CSV Export
+
+Implement:
+
+- Hidden countries management.
+- Restore hidden countries.
+- CSV export of the current table view.
+
+Minimum outcome:
+
+- Hidden records do not affect main ranking.
+- Exported CSV matches the visible ranking and score data.
+
+## Step 7: Packaging Preparation
+
+Implement:
+
+- Build scripts.
+- Packaging scripts or documented packaging path for macOS and Windows.
+- Packaging notes.
+
+Minimum outcome:
+
+- Project has a clear path to produce desktop builds.
+
+## Sequencing Rule
+
+Do not start a later step until the current step is verified and logged.
+
