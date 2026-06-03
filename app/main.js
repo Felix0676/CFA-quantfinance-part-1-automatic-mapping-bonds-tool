@@ -157,11 +157,13 @@ function renderRows(rows) {
         <tr class="data-row ${isExpanded ? "is-expanded" : ""}" data-country="${row.country}">
           <td>${rank}</td>
           <td class="actions-cell">
-            <button class="row-toggle" type="button" aria-expanded="${isExpanded}" data-country="${row.country}">
-              <span>${isExpanded ? "Hide" : "View"}</span>
-            </button>
-            <button class="edit-toggle" type="button" data-country="${row.country}">Edit</button>
-            <button class="hide-toggle" type="button" data-country="${row.country}">Hide</button>
+            <div class="actions-inline">
+              <button class="row-toggle" type="button" aria-expanded="${isExpanded}" data-country="${row.country}">
+                <span>${isExpanded ? "Hide" : "View"}</span>
+              </button>
+              <button class="edit-toggle" type="button" data-country="${row.country}">Edit</button>
+              <button class="hide-toggle" type="button" data-country="${row.country}">Hide</button>
+            </div>
           </td>
           <td class="country-cell">${row.country}</td>
           <td>
