@@ -18,6 +18,7 @@ const singapore = scored.find((record) => record.country === "Singapore");
 assert.ok(singapore);
 assert.equal(singapore.realYield, 0.8999999999999999);
 assert.equal(singapore.dataConfidence, 98.7);
+assert.equal(singapore.scoreBreakdown.sovereignRisk.components.creditRating.normalized, 100);
 
 const missingHeavyRecord = {
   country: "Missing Data Test",
@@ -40,4 +41,3 @@ const sorted = [...scored].sort((a, b) => b.totalScore - a.totalScore);
 assert.equal(sorted[0].country, "Singapore");
 
 console.log("Scoring tests passed.");
-

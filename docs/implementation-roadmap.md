@@ -71,6 +71,13 @@ Minimum outcome:
 - User can inspect ranked sovereign bond records.
 - UI remains readable and stable.
 
+Current Step 4A outcome:
+
+- Add expandable table detail rows.
+- Show credit rating mapped score separately from total score.
+- Show Bond Return & Liquidity score, Sovereign Risk score, total score, and data confidence.
+- Show component-level normalized scores and within-category weights.
+
 ## Step 5: Editing And Persistence
 
 Implement:
