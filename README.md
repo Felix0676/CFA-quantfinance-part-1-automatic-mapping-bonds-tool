@@ -40,6 +40,7 @@ Sovereign Bond Screening Tool
 
 The preview includes:
 
+- Local preview online-session status
 - Search input
 - Region filter
 - Sort control

@@ -33,6 +33,50 @@ select {
   margin-bottom: 22px;
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+.online-stat {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-areas:
+    "label count"
+    "note note";
+  column-gap: 10px;
+  align-items: center;
+  min-width: 168px;
+  min-height: 58px;
+  border: 1px solid #d7e7f4;
+  border-radius: 8px;
+  padding: 9px 12px;
+  background: #ffffff;
+}
+
+.online-stat span {
+  grid-area: label;
+  color: #52657d;
+  font-size: 12px;
+  font-weight: 760;
+  text-transform: uppercase;
+}
+
+.online-stat strong {
+  grid-area: count;
+  justify-self: end;
+  color: #126497;
+  font-size: 24px;
+}
+
+.online-stat small {
+  grid-area: note;
+  color: #607188;
+  font-size: 12px;
+}
+
 .eyebrow {
   margin: 0 0 6px;
   color: #2371a5;

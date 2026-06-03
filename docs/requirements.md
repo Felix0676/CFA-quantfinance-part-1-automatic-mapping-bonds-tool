@@ -25,6 +25,7 @@ The interface should be English-first, simple, and table-centered.
 9. Pin important countries.
 10. Hide countries and restore them later.
 11. Export the current table view to CSV.
+12. View current online session count when the app is deployed with a backend.
 
 ## Data Fields
 
@@ -66,6 +67,7 @@ Detailed scoring rules live in `docs/scoring-model.md`.
 ## Non-Goals For V1
 
 - No live market-data integration.
+- No real multi-user online presence tracking in the local-only preview.
 - No automatic investment recommendation.
 - No portfolio optimization.
 - No trading or brokerage integration.
@@ -75,4 +77,3 @@ Detailed scoring rules live in `docs/scoring-model.md`.
 ## Success Criteria
 
 The v1 app is successful when the user can manually maintain sovereign bond data, recalculate rankings, inspect score components, filter/search the table, preserve local data, and export rankings to CSV.
-

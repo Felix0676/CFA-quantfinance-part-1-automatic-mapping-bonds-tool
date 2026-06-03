@@ -10,7 +10,10 @@ const searchInput = document.querySelector("#searchInput");
 const regionFilter = document.querySelector("#regionFilter");
 const sortMode = document.querySelector("#sortMode");
 const visibleCount = document.querySelector("#visibleCount");
+const onlineCount = document.querySelector("#onlineCount");
 const updateRanking = document.querySelector("#updateRanking");
+
+onlineCount.textContent = "1";
 
 const indicatorLabels = {
   yieldToMaturity: "Yield to Maturity",

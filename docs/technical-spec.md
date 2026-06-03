@@ -16,6 +16,8 @@ The first runnable scaffold uses a dependency-free Node preview server in `scrip
 
 This is a temporary verification shell so the user can run and inspect the app from VS Code immediately, even before npm/Electron dependencies are installed. It should be upgraded to the planned Electron + React + TypeScript stack in a later scaffold increment.
 
+The preview displays `Online Now: 1` as a local-session status only. True concurrent online-user counting requires a deployed backend or realtime service and is not available in the local-only preview.
+
 Run locally with:
 
 ```bash
