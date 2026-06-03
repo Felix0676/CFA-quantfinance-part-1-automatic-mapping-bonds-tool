@@ -4,28 +4,35 @@ import { sampleRecords } from "./sample-data.js";
 const RECORDS_STORAGE_KEY = "sovereign-bond-records-v1";
 const PINNED_STORAGE_KEY = "sovereign-bond-pinned-v1";
 const HIDDEN_STORAGE_KEY = "sovereign-bond-hidden-v1";
-const csvColumns = [
-  "country",
-  "region",
-  "bondName",
-  "currency",
-  "maturity",
-  "couponRate",
-  "bondPrice",
-  "yieldToMaturity",
-  "creditRating",
-  "debtToGdp",
-  "fiscalDeficitToGdp",
-  "inflationRate",
-  "policyInterestRate",
-  "exchangeRateVolatility",
-  "foreignExchangeReserves",
-  "goldReserves",
-  "cdsSpread",
-  "liquidityBidAskSpread",
-  "sourceNote",
-  "lastUpdated"
+const csvColumnDefinitions = [
+  { key: "country", label: "Country" },
+  { key: "region", label: "Region" },
+  { key: "bondName", label: "Bond Name" },
+  { key: "currency", label: "Currency" },
+  { key: "maturity", label: "Maturity" },
+  { key: "couponRate", label: "Coupon Rate (%)" },
+  { key: "bondPrice", label: "Bond Price (clean price)" },
+  { key: "yieldToMaturity", label: "Yield to Maturity (%)" },
+  { key: "creditRating", label: "Credit Rating" },
+  { key: "debtToGdp", label: "Debt-to-GDP (%)" },
+  { key: "fiscalDeficitToGdp", label: "Fiscal Deficit-to-GDP (%)" },
+  { key: "inflationRate", label: "Inflation Rate (%)" },
+  { key: "policyInterestRate", label: "Policy Interest Rate (%)" },
+  { key: "exchangeRateVolatility", label: "Exchange Rate Volatility (%)" },
+  { key: "foreignExchangeReserves", label: "Foreign Exchange Reserves (USD bn)" },
+  { key: "goldReserves", label: "Gold Reserves (tonnes)" },
+  { key: "cdsSpread", label: "CDS Spread (bps)" },
+  { key: "liquidityBidAskSpread", label: "Liquidity / Bid-Ask Spread (%)" },
+  { key: "sourceNote", label: "Source Note" },
+  { key: "lastUpdated", label: "Last Updated (UTC)" }
 ];
+const csvColumns = csvColumnDefinitions.map((column) => column.key);
+const csvHeaderLookup = new Map(
+  csvColumnDefinitions.flatMap((column) => [
+    [normalizeCsvHeader(column.key), column.key],
+    [normalizeCsvHeader(column.label), column.key]
+  ])
+);
 const editableNumberFields = [
   "yieldToMaturity",
   "bondPrice",
@@ -497,19 +504,19 @@ function parseNullableNumber(value) {
 function exportVisibleCsv() {
   const rows = getVisibleRows();
   const exportColumns = [
-    "rank",
-    ...csvColumns,
-    "totalScore",
-    "dataConfidence",
-    "realYield"
+    { key: "rank", label: "Rank" },
+    ...csvColumnDefinitions,
+    { key: "totalScore", label: "Total Score (0-100)" },
+    { key: "dataConfidence", label: "Data Confidence (%)" },
+    { key: "realYield", label: "Real Yield (%)" }
   ];
   const csvRows = [
-    exportColumns.join(","),
+    exportColumns.map((column) => formatCsvValue(column.label)).join(","),
     ...rows.map((row, index) =>
       exportColumns
         .map((column) => {
-          if (column === "rank") return index + 1;
-          return formatCsvValue(row[column]);
+          if (column.key === "rank") return index + 1;
+          return formatCsvValue(row[column.key]);
         })
         .join(",")
     )
@@ -565,10 +572,11 @@ function parseCsvRecords(text) {
   const rows = parseCsvRows(text).filter((row) => row.some((cell) => cell.trim() !== ""));
   if (rows.length < 2) return [];
 
-  const headers = rows[0].map((header) => header.trim());
+  const headers = rows[0].map((header) => getCsvFieldKey(header));
   return rows.slice(1).map((row) => {
     const record = {};
     headers.forEach((header, index) => {
+      if (!header) return;
       record[header] = row[index] ?? "";
     });
 
@@ -588,6 +596,14 @@ function parseCsvRecords(text) {
       ...record
     };
   });
+}
+
+function getCsvFieldKey(header) {
+  return csvHeaderLookup.get(normalizeCsvHeader(header)) || null;
+}
+
+function normalizeCsvHeader(header) {
+  return String(header).trim().toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
 function parseCsvRows(text) {

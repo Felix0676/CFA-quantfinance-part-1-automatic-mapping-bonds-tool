@@ -57,6 +57,7 @@ The preview includes:
 - Hide and restore workflow for countries removed from the visible ranking
 - CSV export for the current visible ranking
 - CSV import for replacing the local dataset
+- CSV headers include human-readable names and units, such as `Debt-to-GDP (%)` and `CDS Spread (bps)`
 
 ## Next Development Step
 

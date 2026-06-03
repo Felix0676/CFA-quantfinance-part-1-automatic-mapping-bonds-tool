@@ -55,6 +55,8 @@ Required fields for v1:
 - Last Updated
 - Source Note
 
+CSV exports must use human-readable headers with units where applicable, such as `Yield to Maturity (%)`, `Debt-to-GDP (%)`, `Foreign Exchange Reserves (USD bn)`, `CDS Spread (bps)`, and `Total Score (0-100)`.
+
 ## Scoring Behavior
 
 The score must use a two-level weighting model:

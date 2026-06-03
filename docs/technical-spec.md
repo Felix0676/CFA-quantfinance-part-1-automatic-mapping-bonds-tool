@@ -63,6 +63,8 @@ Local persistence must preserve:
 
 CSV export should reflect the current table view, including active filters, sorting, score columns, and visible records.
 
+CSV headers should be human-readable and include units where applicable. CSV import should accept both internal field keys and exported human-readable labels so exported files can be imported again.
+
 ## Verification Expectations
 
 Each technical increment should have at least one practical verification step:
