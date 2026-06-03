@@ -2,6 +2,7 @@ import { scoreRecords } from "./scoring.js";
 import { sampleRecords } from "./sample-data.js";
 
 const RECORDS_STORAGE_KEY = "sovereign-bond-records-v1";
+const RECORDS_META_STORAGE_KEY = "sovereign-bond-records-meta-v1";
 const PINNED_STORAGE_KEY = "sovereign-bond-pinned-v1";
 const HIDDEN_STORAGE_KEY = "sovereign-bond-hidden-v1";
 const csvColumnDefinitions = [
@@ -48,6 +49,7 @@ const editableNumberFields = [
   "liquidityBidAskSpread"
 ];
 
+let initialSaveStatusMessage = "Manual edits save in this browser";
 let records = loadRecords();
 let scoredRows = scoreRecords(records);
 let expandedCountry = null;
@@ -75,7 +77,7 @@ const closeEdit = document.querySelector("#closeEdit");
 const cancelEdit = document.querySelector("#cancelEdit");
 
 onlineCount.textContent = "1";
-updateSaveStatus();
+updateSaveStatus(initialSaveStatusMessage);
 
 const indicatorLabels = {
   yieldToMaturity: "Yield to Maturity",
@@ -343,7 +345,18 @@ renderTable();
 function loadRecords() {
   try {
     const stored = window.localStorage.getItem(RECORDS_STORAGE_KEY);
-    return stored ? JSON.parse(stored) : cloneRecords(sampleRecords);
+    if (!stored) return cloneRecords(sampleRecords);
+
+    const storedRecords = JSON.parse(stored);
+    if (!Array.isArray(storedRecords)) return cloneRecords(sampleRecords);
+
+    const merged = mergeLatestSampleRecords(storedRecords);
+    if (merged.addedCount > 0) {
+      persistRecords(merged.records);
+      initialSaveStatusMessage = `${merged.addedCount} sample countries added to local data`;
+    }
+
+    return merged.records;
   } catch {
     return cloneRecords(sampleRecords);
   }
@@ -353,8 +366,35 @@ function cloneRecords(sourceRecords) {
   return sourceRecords.map((record) => ({ ...record }));
 }
 
+function mergeLatestSampleRecords(storedRecords) {
+  const existingCountries = new Set(storedRecords.map((record) => normalizeCountryKey(record.country)));
+  const missingSampleRecords = sampleRecords.filter(
+    (record) => !existingCountries.has(normalizeCountryKey(record.country))
+  );
+
+  return {
+    addedCount: missingSampleRecords.length,
+    records: [...cloneRecords(storedRecords), ...cloneRecords(missingSampleRecords)]
+  };
+}
+
+function normalizeCountryKey(country) {
+  return String(country || "").trim().toLowerCase();
+}
+
+function persistRecords(nextRecords) {
+  window.localStorage.setItem(RECORDS_STORAGE_KEY, JSON.stringify(nextRecords));
+  window.localStorage.setItem(
+    RECORDS_META_STORAGE_KEY,
+    JSON.stringify({
+      sampleCountryCount: sampleRecords.length,
+      savedAt: new Date().toISOString()
+    })
+  );
+}
+
 function saveRecords() {
-  window.localStorage.setItem(RECORDS_STORAGE_KEY, JSON.stringify(records));
+  persistRecords(records);
   updateSaveStatus();
 }
 
@@ -366,6 +406,7 @@ function resetLocalRecords() {
   if (!shouldReset) return;
 
   window.localStorage.removeItem(RECORDS_STORAGE_KEY);
+  window.localStorage.removeItem(RECORDS_META_STORAGE_KEY);
   window.localStorage.removeItem(PINNED_STORAGE_KEY);
   window.localStorage.removeItem(HIDDEN_STORAGE_KEY);
   records = cloneRecords(sampleRecords);
