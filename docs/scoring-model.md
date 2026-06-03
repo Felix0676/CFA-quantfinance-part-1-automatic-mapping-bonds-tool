@@ -98,15 +98,21 @@ For higher-is-better indicators, higher normalized values should increase score.
 
 For lower-is-better indicators, lower raw values should increase score.
 
-The first implementation can use dataset min-max normalization, with the scoring logic kept isolated so future methods can be added.
+The first implementation uses winsorized min-max normalization, with the scoring logic kept isolated so future methods can be added.
+
+Winsorized min-max reduces outlier distortion:
+
+- Values below P5 are capped at P5.
+- Values above P95 are capped at P95.
+- Scores are then linearly scaled between P5 and P95.
 
 The UI must show the active benchmark for each normalized indicator:
 
-- For higher-is-better indicators: dataset max = 100, dataset min = 0.
-- For lower-is-better indicators: dataset min = 100, dataset max = 0.
+- For higher-is-better indicators: P95 = 100, P5 = 0.
+- For lower-is-better indicators: P5 = 100, P95 = 0.
 - For mapped indicators such as credit rating: show the rating scale benchmark, such as AAA = 100 and D = 0.
 
-This makes scores auditable. For example, if the current dataset has 10Y yield values from 1.10% to 4.50%, then 4.50% maps to 100, 1.10% maps to 0, and 3.00% maps to about 55.9.
+This makes scores auditable. For example, if the current sample dataset has 10Y yield P5 near 1.40% and P95 near 4.46%, then 4.46% maps to 100, 1.40% maps to 0, and 3.00% maps to about 52.3.
 
 ## Missing Data
 

@@ -49,6 +49,12 @@ export const CREDIT_RATING_SCORES = {
   D: 0
 };
 
+export const NORMALIZATION_CONFIG = {
+  method: "winsorized-min-max",
+  lowerPercentile: 0.05,
+  upperPercentile: 0.95
+};
+
 const INDICATOR_DEFINITIONS = {
   yieldToMaturity: { category: "bondReturnLiquidity", direction: "higher" },
   realYield: { category: "bondReturnLiquidity", direction: "higher" },
@@ -72,6 +78,25 @@ function isUsableNumber(value) {
 function round(value, digits = 1) {
   const factor = 10 ** digits;
   return Math.round(value * factor) / factor;
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function percentile(values, percentileValue) {
+  if (values.length === 0) return null;
+  if (values.length === 1) return values[0];
+
+  const sorted = [...values].sort((a, b) => a - b);
+  const index = (sorted.length - 1) * percentileValue;
+  const lowerIndex = Math.floor(index);
+  const upperIndex = Math.ceil(index);
+
+  if (lowerIndex === upperIndex) return sorted[lowerIndex];
+
+  const weight = index - lowerIndex;
+  return sorted[lowerIndex] * (1 - weight) + sorted[upperIndex] * weight;
 }
 
 function getRealYield(record) {
@@ -102,7 +127,8 @@ function normalizeValue(value, min, max, direction) {
   if (direction === "mapped") return value;
   if (min === max) return 50;
 
-  const normalized = ((value - min) / (max - min)) * 100;
+  const cappedValue = clamp(value, min, max);
+  const normalized = ((cappedValue - min) / (max - min)) * 100;
   return direction === "lower" ? 100 - normalized : normalized;
 }
 
@@ -115,14 +141,20 @@ function getBenchmark(range) {
     return {
       zeroScoreValue: range.max,
       hundredScoreValue: range.min,
-      direction: range.direction
+      direction: range.direction,
+      method: NORMALIZATION_CONFIG.method,
+      lowerPercentile: NORMALIZATION_CONFIG.lowerPercentile,
+      upperPercentile: NORMALIZATION_CONFIG.upperPercentile
     };
   }
 
   return {
     zeroScoreValue: range.min,
     hundredScoreValue: range.max,
-    direction: range.direction
+    direction: range.direction,
+    method: NORMALIZATION_CONFIG.method,
+    lowerPercentile: NORMALIZATION_CONFIG.lowerPercentile,
+    upperPercentile: NORMALIZATION_CONFIG.upperPercentile
   };
 }
 
@@ -135,8 +167,8 @@ function buildRanges(records) {
       .filter(isUsableNumber);
 
     ranges[indicator] = {
-      min: values.length ? Math.min(...values) : null,
-      max: values.length ? Math.max(...values) : null,
+      min: values.length ? percentile(values, NORMALIZATION_CONFIG.lowerPercentile) : null,
+      max: values.length ? percentile(values, NORMALIZATION_CONFIG.upperPercentile) : null,
       direction: definition.direction
     };
   }

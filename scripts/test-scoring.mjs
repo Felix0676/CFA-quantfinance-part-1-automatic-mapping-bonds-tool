@@ -19,10 +19,11 @@ assert.ok(singapore);
 assert.equal(singapore.realYield, 0.8999999999999999);
 assert.equal(singapore.dataConfidence, 98.7);
 assert.equal(singapore.scoreBreakdown.sovereignRisk.components.creditRating.normalized, 100);
-assert.equal(singapore.scoreBreakdown.bondReturnLiquidity.components.yieldToMaturity.benchmark.hundredScoreValue, 4.5);
-assert.equal(singapore.scoreBreakdown.bondReturnLiquidity.components.yieldToMaturity.benchmark.zeroScoreValue, 1.1);
-assert.equal(singapore.scoreBreakdown.sovereignRisk.components.cdsSpread.benchmark.hundredScoreValue, 11);
-assert.equal(singapore.scoreBreakdown.sovereignRisk.components.cdsSpread.benchmark.zeroScoreValue, 38);
+assert.equal(roundForTest(singapore.scoreBreakdown.bondReturnLiquidity.components.yieldToMaturity.benchmark.hundredScoreValue), 4.46);
+assert.equal(roundForTest(singapore.scoreBreakdown.bondReturnLiquidity.components.yieldToMaturity.benchmark.zeroScoreValue), 1.4);
+assert.equal(roundForTest(singapore.scoreBreakdown.sovereignRisk.components.cdsSpread.benchmark.hundredScoreValue), 12);
+assert.equal(roundForTest(singapore.scoreBreakdown.sovereignRisk.components.cdsSpread.benchmark.zeroScoreValue), 36.8);
+assert.equal(singapore.scoreBreakdown.bondReturnLiquidity.components.yieldToMaturity.benchmark.method, "winsorized-min-max");
 
 const missingHeavyRecord = {
   country: "Missing Data Test",
@@ -45,3 +46,7 @@ const sorted = [...scored].sort((a, b) => b.totalScore - a.totalScore);
 assert.equal(sorted[0].country, "Singapore");
 
 console.log("Scoring tests passed.");
+
+function roundForTest(value) {
+  return Math.round(value * 100) / 100;
+}

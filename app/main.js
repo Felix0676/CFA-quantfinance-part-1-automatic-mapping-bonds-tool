@@ -184,7 +184,9 @@ function formatBenchmark(indicator, benchmark) {
 
   const zeroValue = formatRawValue(indicator, benchmark.zeroScoreValue);
   const hundredValue = formatRawValue(indicator, benchmark.hundredScoreValue);
-  return `Benchmark: ${hundredValue} = 100, ${zeroValue} = 0`;
+  const hundredLabel = benchmark.direction === "lower" ? "P5" : "P95";
+  const zeroLabel = benchmark.direction === "lower" ? "P95" : "P5";
+  return `Benchmark: ${hundredLabel} ${hundredValue} = 100, ${zeroLabel} ${zeroValue} = 0`;
 }
 
 searchInput.addEventListener("input", renderTable);
