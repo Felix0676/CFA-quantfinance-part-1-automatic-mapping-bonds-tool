@@ -23,6 +23,13 @@ Minimum outcome:
 - Development command is documented.
 - No scoring or table complexity yet.
 
+Current Step 2A outcome:
+
+- Add a dependency-free Node preview server.
+- Add a static app shell that can be opened from VS Code on Mac.
+- Document the temporary preview command.
+- Defer Electron + React + TypeScript dependency installation until the environment has a package manager available.
+
 ## Step 3: Scoring Engine
 
 Implement:
@@ -98,4 +105,3 @@ Minimum outcome:
 ## Sequencing Rule
 
 Do not start a later step until the current step is verified and logged.
-

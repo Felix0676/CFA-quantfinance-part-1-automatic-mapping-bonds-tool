@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sovereign Bond Screening Tool</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <section>
+          <p class="eyebrow">Transparent Scoring Model</p>
+          <h1>Sovereign Bond Screening Tool</h1>
+        </section>
+        <button id="updateRanking" type="button">Update Ranking</button>
+      </header>
+
+      <section class="controls" aria-label="Table controls">
+        <label>
+          Search
+          <input id="searchInput" type="search" placeholder="Country, currency, rating..." />
+        </label>
+        <label>
+          Region
+          <select id="regionFilter">
+            <option value="all">All regions</option>
+            <option value="Europe">Europe</option>
+            <option value="Asia">Asia</option>
+            <option value="Americas">Americas</option>
+            <option value="Middle East">Middle East</option>
+          </select>
+        </label>
+        <label>
+          Sort
+          <select id="sortMode">
+            <option value="score-desc">Score high to low</option>
+            <option value="score-asc">Score low to high</option>
+            <option value="az">Country A-Z</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="summary-grid" aria-label="Model summary">
+        <article>
+          <span>Category Weight</span>
+          <strong>35% / 65%</strong>
+          <small>Return & Liquidity / Sovereign Risk</small>
+        </article>
+        <article>
+          <span>Records</span>
+          <strong id="visibleCount">0</strong>
+          <small>Visible sample countries</small>
+        </article>
+        <article>
+          <span>Next Step</span>
+          <strong>Scoring Engine</strong>
+          <small>Types, weights, confidence</small>
+        </article>
+      </section>
+
+      <section class="table-panel" aria-label="Sovereign bond ranking table">
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Country</th>
+              <th>Region</th>
+              <th>Currency</th>
+              <th>YTM</th>
+              <th>Rating</th>
+              <th>Total Score</th>
+              <th>Confidence</th>
+            </tr>
+          </thead>
+          <tbody id="bondRows"></tbody>
+        </table>
+      </section>
+    </main>
+    <script src="/main.js"></script>
+  </body>
+</html>
+

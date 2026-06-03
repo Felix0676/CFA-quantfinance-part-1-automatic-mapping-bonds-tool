@@ -10,6 +10,18 @@
 
 The stack should remain simple and maintainable for a small desktop app.
 
+## Current Scaffold
+
+The first runnable scaffold uses a dependency-free Node preview server in `scripts/dev-server.mjs` and static files in `app/`.
+
+This is a temporary verification shell so the user can run and inspect the app from VS Code immediately, even before npm/Electron dependencies are installed. It should be upgraded to the planned Electron + React + TypeScript stack in a later scaffold increment.
+
+Run locally with:
+
+```bash
+node scripts/dev-server.mjs
+```
+
 ## Architecture Principles
 
 - Keep scoring logic separate from UI components.
@@ -58,4 +70,3 @@ Each technical increment should have at least one practical verification step:
 - Manual launch check for desktop shell changes.
 - UI interaction check for table and form changes.
 - Export file inspection for CSV changes.
-
