@@ -27,6 +27,22 @@ const indicatorLabels = {
   goldReserves: "Gold Reserves"
 };
 
+const indicatorUnits = {
+  yieldToMaturity: "%",
+  realYield: "%",
+  liquidityBidAskSpread: "%",
+  bondPriceDiscount: "pts",
+  creditRating: "",
+  cdsSpread: "bps",
+  debtToGdp: "%",
+  fiscalDeficitToGdp: "%",
+  inflationRate: "%",
+  exchangeRateVolatility: "%",
+  foreignExchangeReserves: "USD bn",
+  policyInterestRate: "%",
+  goldReserves: "tonnes"
+};
+
 function getVisibleRows() {
   const query = searchInput.value.trim().toLowerCase();
   const region = regionFilter.value;
@@ -132,6 +148,7 @@ function renderComponentList(components) {
             <div>
               <dt>${indicatorLabels[indicator]}</dt>
               <dd>
+                <small class="raw-value">Raw: ${formatRawValue(indicator, component.rawValue)}</small>
                 <span>${formatScore(component.normalized)} / 100</span>
                 <small>Weight ${(component.weight * 100).toFixed(0)}%</small>
               </dd>
@@ -145,6 +162,16 @@ function renderComponentList(components) {
 
 function formatScore(value) {
   return value === null ? "Missing" : value.toFixed(1);
+}
+
+function formatRawValue(indicator, value) {
+  if (value === null) return "Missing";
+  const unit = indicatorUnits[indicator];
+  if (indicator === "creditRating") return `${value.toFixed(0)} mapped points`;
+  if (indicator === "bondPriceDiscount") return `${value.toFixed(1)} ${unit}`;
+  if (unit === "USD bn") return `${value.toLocaleString()} ${unit}`;
+  if (unit === "tonnes") return `${value.toLocaleString()} ${unit}`;
+  return `${value.toFixed(2)}${unit}`;
 }
 
 searchInput.addEventListener("input", renderTable);

@@ -47,6 +47,7 @@ The preview includes:
 - Sample sovereign bond ranking table
 - Scores and confidence calculated by the shared scoring engine
 - Expandable score details showing rating score, category scores, and component scores
+- Raw component values next to normalized model scores
 
 ## Next Development Step
 
