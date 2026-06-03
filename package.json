@@ -7,6 +7,10 @@
   "scripts": {
     "dev": "node scripts/dev-server.mjs",
     "check": "node scripts/check-files.mjs",
-    "test": "node scripts/test-scoring.mjs"
+    "test": "node scripts/test-scoring.mjs",
+    "generate-data": "node scripts/generate-country-data.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
   }
 }
