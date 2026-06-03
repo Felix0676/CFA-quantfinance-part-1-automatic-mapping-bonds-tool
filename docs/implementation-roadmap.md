@@ -47,6 +47,13 @@ Minimum outcome:
 - Scoring works against sample records.
 - Focused tests verify expected behavior.
 
+Current Step 3 outcome:
+
+- Add a shared browser/Node scoring engine in `app/scoring.js`.
+- Add sample sovereign bond records in `app/sample-data.js`.
+- Add scoring tests in `scripts/test-scoring.mjs`.
+- Wire the preview table to computed score and data confidence values.
+
 ## Step 4: Core Table UI
 
 Implement:

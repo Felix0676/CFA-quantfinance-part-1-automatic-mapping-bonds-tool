@@ -1,50 +1,7 @@
-const sampleRows = [
-  {
-    country: "United States",
-    region: "Americas",
-    currency: "USD",
-    ytm: 4.3,
-    rating: "AA+",
-    score: 82.4,
-    confidence: 91
-  },
-  {
-    country: "Germany",
-    region: "Europe",
-    currency: "EUR",
-    ytm: 2.6,
-    rating: "AAA",
-    score: 80.1,
-    confidence: 88
-  },
-  {
-    country: "Japan",
-    region: "Asia",
-    currency: "JPY",
-    ytm: 1.1,
-    rating: "A+",
-    score: 71.8,
-    confidence: 84
-  },
-  {
-    country: "United Kingdom",
-    region: "Europe",
-    currency: "GBP",
-    ytm: 4.5,
-    rating: "AA",
-    score: 76.6,
-    confidence: 86
-  },
-  {
-    country: "Singapore",
-    region: "Asia",
-    currency: "SGD",
-    ytm: 3.0,
-    rating: "AAA",
-    score: 83.7,
-    confidence: 79
-  }
-];
+import { scoreRecords } from "./scoring.js";
+import { sampleRecords } from "./sample-data.js";
+
+let scoredRows = scoreRecords(sampleRecords);
 
 const tableBody = document.querySelector("#bondRows");
 const searchInput = document.querySelector("#searchInput");
@@ -58,16 +15,16 @@ function getVisibleRows() {
   const region = regionFilter.value;
   const sort = sortMode.value;
 
-  return sampleRows
+  return scoredRows
     .filter((row) => {
       const matchesRegion = region === "all" || row.region === region;
-      const searchText = `${row.country} ${row.region} ${row.currency} ${row.rating}`.toLowerCase();
+      const searchText = `${row.country} ${row.region} ${row.currency} ${row.creditRating}`.toLowerCase();
       return matchesRegion && searchText.includes(query);
     })
     .sort((a, b) => {
-      if (sort === "score-asc") return a.score - b.score;
+      if (sort === "score-asc") return a.totalScore - b.totalScore;
       if (sort === "az") return a.country.localeCompare(b.country);
-      return b.score - a.score;
+      return b.totalScore - a.totalScore;
     });
 }
 
@@ -82,10 +39,10 @@ function renderTable() {
           <td>${row.country}</td>
           <td>${row.region}</td>
           <td>${row.currency}</td>
-          <td>${row.ytm.toFixed(2)}%</td>
-          <td><span class="rating">${row.rating}</span></td>
-          <td class="score">${row.score.toFixed(1)}</td>
-          <td>${row.confidence}%</td>
+          <td>${row.yieldToMaturity.toFixed(2)}%</td>
+          <td><span class="rating">${row.creditRating}</span></td>
+          <td class="score">${row.totalScore.toFixed(1)}</td>
+          <td>${row.dataConfidence.toFixed(1)}%</td>
         </tr>
       `
     )
@@ -96,6 +53,7 @@ searchInput.addEventListener("input", renderTable);
 regionFilter.addEventListener("change", renderTable);
 sortMode.addEventListener("change", renderTable);
 updateRanking.addEventListener("click", () => {
+  scoredRows = scoreRecords(sampleRecords);
   updateRanking.textContent = "Ranking Updated";
   renderTable();
   window.setTimeout(() => {

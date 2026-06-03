@@ -11,6 +11,9 @@ const requiredFiles = [
   "app/index.html",
   "app/styles.css",
   "app/main.js",
+  "app/scoring.js",
+  "app/sample-data.js",
+  "scripts/test-scoring.mjs",
   "scripts/dev-server.mjs"
 ];
 
@@ -33,4 +36,3 @@ if (missing.length > 0) {
 }
 
 console.log("Project scaffold check passed.");
-

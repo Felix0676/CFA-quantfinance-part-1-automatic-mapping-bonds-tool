@@ -45,15 +45,27 @@ The preview includes:
 - Sort control
 - Update Ranking button
 - Sample sovereign bond ranking table
+- Scores and confidence calculated by the shared scoring engine
 
 ## Next Development Step
 
-The next step is the scoring engine:
+The current preview includes the first scoring engine. The next step is to expand the table UI:
 
-- Domain data types
-- Rating mapping
-- Real yield calculation
-- Normalization
-- Two-level weights
-- Total score and data confidence
+- More visible columns
+- Expandable country details
+- Pin behavior
+- A-Z grouping
 
+## Checks
+
+Run the file scaffold check:
+
+```bash
+node scripts/check-files.mjs
+```
+
+Run the scoring test:
+
+```bash
+node scripts/test-scoring.mjs
+```
