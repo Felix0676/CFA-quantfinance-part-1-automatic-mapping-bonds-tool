@@ -214,10 +214,40 @@ function scoreCategory(record, category, ranges, weights = DEFAULT_WEIGHTS) {
   };
 }
 
+function assignRatingByBand(records) {
+  for (const record of records) {
+    if (!isUsableNumber(record.totalScore)) {
+      record.rating = null;
+      continue;
+    }
+
+    const score = record.totalScore;
+    if (score >= 90) {
+      record.rating = "AAA";
+    } else if (score >= 80) {
+      record.rating = "AA";
+    } else if (score >= 70) {
+      record.rating = "A";
+    } else if (score >= 60) {
+      record.rating = "BBB";
+    } else if (score >= 50) {
+      record.rating = "BB";
+    } else if (score >= 40) {
+      record.rating = "B";
+    } else if (score >= 30) {
+      record.rating = "CCC";
+    } else if (score >= 20) {
+      record.rating = "CC";
+    } else {
+      record.rating = "C";
+    }
+  }
+}
+
 export function scoreRecords(records, weights = DEFAULT_WEIGHTS) {
   const ranges = buildRanges(records);
 
-  return records.map((record) => {
+  const scored = records.map((record) => {
     const bondCategory = scoreCategory(record, "bondReturnLiquidity", ranges, weights);
     const riskCategory = scoreCategory(record, "sovereignRisk", ranges, weights);
 
@@ -245,12 +275,13 @@ export function scoreRecords(records, weights = DEFAULT_WEIGHTS) {
       usedModelWeight += item.weight * item.result.usedWeight;
     }
 
-    const totalScore = usedCategoryWeight > 0 ? totalWeightedScore / usedCategoryWeight : null;
+    const weightedScore = usedCategoryWeight > 0 ? totalWeightedScore / usedCategoryWeight : null;
 
     return {
       ...record,
       realYield: getRealYield(record),
-      totalScore: totalScore === null ? null : round(totalScore),
+      weightedScore: weightedScore === null ? null : round(weightedScore, 4),
+      totalScore: weightedScore === null ? null : weightedScore,
       dataConfidence: round(usedModelWeight * 100),
       scoreBreakdown: {
         bondReturnLiquidity: {
@@ -264,4 +295,38 @@ export function scoreRecords(records, weights = DEFAULT_WEIGHTS) {
       }
     };
   });
+
+  const scoredWithWeights = scored.filter((record) => isUsableNumber(record.weightedScore));
+  const availableWeightedScores = scoredWithWeights.map((record) => record.weightedScore);
+  const meanWeightedScore =
+    availableWeightedScores.length > 0
+      ? availableWeightedScores.reduce((sum, value) => sum + value, 0) / availableWeightedScores.length
+      : null;
+  const variance =
+    availableWeightedScores.length > 0
+      ? availableWeightedScores.reduce((sum, value) => sum + (value - meanWeightedScore) ** 2, 0) /
+        availableWeightedScores.length
+      : null;
+  const standardDeviation = variance !== null ? Math.sqrt(variance) : null;
+
+  const final = scored.map((record) => {
+    let finalScore = null;
+    if (
+      isUsableNumber(record.weightedScore) &&
+      isUsableNumber(meanWeightedScore) &&
+      isUsableNumber(standardDeviation) &&
+      standardDeviation > 0
+    ) {
+      const z = (record.weightedScore - meanWeightedScore) / standardDeviation;
+      finalScore = 100 / (1 + Math.exp(-z));
+    }
+
+    return {
+      ...record,
+      totalScore: finalScore === null ? null : round(finalScore)
+    };
+  });
+
+  assignRatingByBand(final);
+  return final;
 }
