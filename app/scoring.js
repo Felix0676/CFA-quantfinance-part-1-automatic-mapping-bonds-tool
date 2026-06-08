@@ -5,21 +5,21 @@ export const DEFAULT_WEIGHTS = {
   },
   indicators: {
     bondReturnLiquidity: {
-      yieldToMaturity: 0.4,
-      realYield: 0.3,
-      liquidityBidAskSpread: 0.2,
-      bondPriceDiscount: 0.1
+      yieldToMaturity: 0,
+      realYield: 0.5,
+      liquidityBidAskSpread: 0.3333333333,
+      bondPriceDiscount: 0.1666666667
     },
     sovereignRisk: {
-      creditRating: 0.28,
-      cdsSpread: 0.16,
-      debtToGdp: 0.14,
-      fiscalDeficitToGdp: 0.12,
-      inflationRate: 0.1,
-      exchangeRateVolatility: 0.09,
-      foreignExchangeReserves: 0.08,
-      policyInterestRate: 0.02,
-      goldReserves: 0.01
+      creditRating: 0.3111111111,
+      cdsSpread: 0.1777777778,
+      debtToGdp: 0.1555555556,
+      fiscalDeficitToGdp: 0.1333333333,
+      inflationRate: 0,
+      exchangeRateVolatility: 0.1,
+      foreignExchangeReserves: 0.0888888889,
+      policyInterestRate: 0.0222222222,
+      goldReserves: 0.0111111111
     }
   }
 };
